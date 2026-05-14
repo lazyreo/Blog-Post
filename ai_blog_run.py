@@ -1,5 +1,9 @@
 from llm_client import get_ai_response_stream
 import streamlit as st
+import pdf
+
+if "final_output" not in st.session_state:
+    st.session_state.final_output = ""
 
 content = st.text_input("Enter the topic: ")
 is_submitted = st.button("Submit")
@@ -7,10 +11,10 @@ if is_submitted:
     response_stream = get_ai_response_stream(
         contents=[
             {
-                "role":"user",
-                "parts":[
+                "role": "user",
+                "parts": [
                     {
-                        "text":"""
+                        "text": """
     Your Task:
     1. Read the user's input carefully, interpret user's wished topic and understand user's intent.
     2. Search the web related to user's topic according to user's intent.
@@ -26,22 +30,35 @@ if is_submitted:
     """
                     },
                     {
-                        "text":f"""
+                        "text": f"""
     User's Input:
     {content}
     """
                     }
                 ]
-                
+
             }
         ],
-                config={
-                        "system_instruction": "You are a professional blog creator.",
-                        "temperature": 0.5
-                }
+        config={
+            "system_instruction": "You are a professional blog creator.",
+            "temperature": 0.5
+        }
     )
 
     try:
-        st.write_stream(chunk.text for chunk in response_stream if chunk.text)
+        written_stream_response = st.write_stream(
+            chunk.text for chunk in response_stream if chunk.text)
+        st.session_state.final_output += written_stream_response
+        create_pdf = st.button(
+            "Extract as PDF",
+            on_click=pdf.txt_to_pdf,
+            args=(
+                (72, 0),
+                st.session_state.final_output
+            )
+        )
+        if create_pdf:
+            st.success("PDF created.")
+
     except Exception as e:
         st.write("An unexpected error occured: ", e)

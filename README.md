@@ -1,30 +1,31 @@
-# Blog Post Streamlit Exercises
+# Blog Post Streamlit Apps
 
-This repository contains three small Streamlit example apps demonstrating session state, callback usage, and AI integration for blog creation.
+This repository contains Streamlit examples for creating blog posts manually and generating blog content with AI.
 
 ## Files
 
-- `manual_blog_run.py` - A manual blog post creator interface.
+- `manual_blog_run.py` - Manual blog creator.
   - Click `+ Create` to enter a title, introduction, main body, and conclusion.
-  - When all fields are filled, the app displays the completed blog post.
-  - Uses `st.session_state` to store `create_new_blog`, `done`, and the blog content.
+  - When all fields are completed, the app displays the finished blog post.
+  - Uses `streamlit.session_state` to manage creation state and stored content.
 
-- `ai_blog_run.py` - An AI-powered blog post generator.
-  - Enter a topic and click `Submit` to generate a blog post using Google's Gemini AI.
-  - The app streams the AI response and displays the formatted blog post.
+- `ai_blog_run.py` - AI-powered blog post generator.
+  - Enter a topic and click `Submit` to generate a blog post via Google Gemini.
+  - Streams the AI-generated text to the app and stores it in session state.
+  - Includes a button to export the generated text as `final_doc.pdf`.
 
-- `test.py` - A counter example with callback arguments.
-  - Enter an increment value and click `Increment`.
-  - The count is stored in `st.session_state.count` and updated with each click.
+- `llm_client.py` - Gemini AI client wrapper.
+  - Loads `MY_API_KEY` from the `.env` file and sends requests to the Gemini API.
 
-- `llm_client.py` - A client for interacting with Google's Gemini AI API.
+- `pdf.py` - PDF export helper.
+  - Converts generated text into a PDF file saved as `final_doc.pdf`.
 
 ## Requirements
 
 - Python 3.14 or higher
 - Dependencies as listed in `pyproject.toml`
 
-## Install
+## Setup
 
 ```bash
 python -m venv .venv
@@ -32,28 +33,29 @@ source .venv/bin/activate
 pip install -e .
 ```
 
+Create a `.env` file in the project root with:
+
+```env
+MY_API_KEY=your_google_gemini_api_key
+```
+
 ## Run
 
-To run the manual blog post creator:
+To run the manual blog creator:
 
 ```bash
 streamlit run manual_blog_run.py
 ```
 
-To run the AI blog post generator:
+To run the AI blog generator:
 
 ```bash
 streamlit run ai_blog_run.py
 ```
 
-To run the counter example:
-
-```bash
-streamlit run test.py
-```
-
 ## Notes
 
-- `manual_blog_run.py` uses a button callback to switch into blog creation mode.
-- `ai_blog_run.py` integrates with Google's Gemini AI for content generation (requires API key in `.env`).
-- `test.py` demonstrates passing the current input value to a callback function.
+- `manual_blog_run.py` is a simple manual blog builder using Streamlit inputs and session state.
+- `ai_blog_run.py` sends user input to Google Gemini and streams the generated blog response.
+- `pdf.py` saves the generated AI output as a PDF file.
+- `llm_client.py` depends on `dotenv` to load the API key from `.env`.
